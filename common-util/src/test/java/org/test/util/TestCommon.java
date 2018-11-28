@@ -84,34 +84,34 @@ public class TestCommon {
   @Test
   public void testLimitStringLenthUTF8() {
     String s = null;
-    Assert.assertEquals(Strings.padEnd("", 10, ' '), CommonUtil.limitStringLengthUTF82(s, 10));
+    Assert.assertEquals(Strings.padEnd("", 10, ' '), CommonUtil.exactStringLengthUTF8(s, 10));
 
     s = "12345678901234567890";
-    Assert.assertEquals("1234567890", CommonUtil.limitStringLengthUTF82(s, 10));
+    Assert.assertEquals("1234567890", CommonUtil.exactStringLengthUTF8(s, 10));
 
     s = "一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十";
-    Assert.assertEquals("一二三 ", CommonUtil.limitStringLengthUTF82(s, 10));
+    Assert.assertEquals("一二三 ", CommonUtil.exactStringLengthUTF8(s, 10));
 
 
     s = "一二三四a五六七八九十一二三四，五六七八九十一二三四五六七八九十abc";
-    Assert.assertEquals("一二三 ", CommonUtil.limitStringLengthUTF82(s, 10));
+    Assert.assertEquals("一二三 ", CommonUtil.exactStringLengthUTF8(s, 10));
 
     s = "一二三四a五六七八九十一二三四，五六七八九十一二三四五六七八九十abc";
-    Assert.assertEquals("", CommonUtil.limitStringLengthUTF82(s, 0));
+    Assert.assertEquals("", CommonUtil.exactStringLengthUTF8(s, 0));
   }
 
   @Test
   public void test3() {
     String s = "一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十";
-    Assert.assertEquals("一二三 ", CommonUtil.limitStringLengthUTF82(s, 10));
+    Assert.assertEquals("一二三 ", CommonUtil.exactStringLengthUTF8(s, 10));
 
     s = "一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十";
-    Assert.assertEquals("一二三", CommonUtil.limitStringLengthUTF82(s, 9));
+    Assert.assertEquals("一二三", CommonUtil.exactStringLengthUTF8(s, 9));
 
     s = "一二a三四五六七八九十一二三四五六七八九十一二三四五六七八九十";
-    Assert.assertEquals("一二a三", CommonUtil.limitStringLengthUTF82(s, 10));
+    Assert.assertEquals("一二a三", CommonUtil.exactStringLengthUTF8(s, 10));
 
     s = "一二a三四五六七八九十一二三四五六七八九十一二三四五六七八九十";
-    Assert.assertEquals("一二a三 ", CommonUtil.limitStringLengthUTF82(s, 11));
+    Assert.assertEquals("一二a三 ", CommonUtil.exactStringLengthUTF8(s, 11));
   }
 }

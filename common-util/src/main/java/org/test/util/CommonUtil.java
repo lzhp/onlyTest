@@ -81,35 +81,37 @@ public class CommonUtil {
    * @param maxUTF8BytesLength
    * @return
    */
-  public static String limitStringLengthUTF82(String originalString, int maxUTF8BytesLength) {
+  public static String exactStringLengthUTF8(String originalString, int maxUTF8BytesLength) {
 
     if (Strings.isNullOrEmpty(originalString)) {
       return Strings.padEnd("", maxUTF8BytesLength, ' ');
     }
-    
-    if (maxUTF8BytesLength==0) {
+
+    if (maxUTF8BytesLength == 0) {
       return "";
-    }else if (maxUTF8BytesLength<0) {
+    } else if (maxUTF8BytesLength < 0) {
       return Strings.nullToEmpty(originalString);
     }
-    
+
     String result = originalString;
     int i = 0;
     if (stringLengthUTF8Bytes(originalString) > maxUTF8BytesLength) {
-
       try {
         result = new String(originalString.getBytes("UTF8"), 0, maxUTF8BytesLength, "UTF8");
 
-        log.debug("well{}", Utf8.isWellFormed(result.getBytes("UTF8")));
+        // last character
         i = result.length() - 1;
         log.debug("i:{}", i);
-        log.debug("result:{}", result.codePointAt(i));
-        log.debug("source:{}", originalString.codePointAt(i));
+        log.debug("last of result:{}", result.codePointAt(i));
+        log.debug("same of source:{}", originalString.codePointAt(i));
         if (!Objects.equals(result.codePointAt(i), originalString.codePointAt(i))) {
+          // half word of Chinese etc, trim last character
           result = result.substring(0, i);
         }
       } catch (UnsupportedEncodingException e) {
-        e.printStackTrace();
+        //will not get here
+        log.error("", e);
+        return "";
       }
     }
     log.debug("{}", stringLengthUTF8Bytes(result));
