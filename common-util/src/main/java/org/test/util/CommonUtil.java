@@ -1,12 +1,13 @@
 package org.test.util;
 
+/** @author lizhipeng */
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+
 import com.google.common.base.Strings;
-import com.google.common.base.Utf8;
 import com.google.common.collect.Lists;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -62,8 +63,9 @@ public class CommonUtil {
     if (stringLengthUTF8Bytes(temp) > maxUTF8BytesLength) {
       for (int i = temp.length(); i >= 0; i--) {
         result = temp.substring(0, i);
-        if (stringLengthUTF8Bytes(result) <= maxUTF8BytesLength)
+        if (stringLengthUTF8Bytes(result) <= maxUTF8BytesLength) {
           break;
+        }
       }
     }
 
@@ -98,26 +100,26 @@ public class CommonUtil {
     if (stringLengthUTF8Bytes(originalString) > maxUTF8BytesLength) {
       try {
         result = new String(originalString.getBytes("UTF8"), 0, maxUTF8BytesLength, "UTF8");
-
-        // last character
-        i = result.length() - 1;
-        log.debug("i:{}", i);
-        log.debug("last of result:{}", result.codePointAt(i));
-        log.debug("same of source:{}", originalString.codePointAt(i));
-        if (!Objects.equals(result.codePointAt(i), originalString.codePointAt(i))) {
-          // half word of Chinese etc, trim last character
-          result = result.substring(0, i);
-        }
       } catch (UnsupportedEncodingException e) {
-        //will not get here
+        // will not get here
         log.error("", e);
         return "";
       }
+      // last character
+      i = result.length() - 1;
+      //        log.debug("i:{}", i);
+      //        log.debug("last of result:{}", result.codePointAt(i));
+      //        log.debug("same of source:{}", originalString.codePointAt(i));
+      if (result.codePointAt(i) != originalString.codePointAt(i)) {
+        // half word of Chinese etc, trim last character
+        result = result.substring(0, i);
+      }
     }
-    log.debug("{}", stringLengthUTF8Bytes(result));
+    //    log.debug("{}", stringLengthUTF8Bytes(result));
     if (stringLengthUTF8Bytes(result) < maxUTF8BytesLength) {
-      result = Strings.padEnd(result,
-          result.length() + maxUTF8BytesLength - stringLengthUTF8Bytes(result), ' ');
+      result =
+          Strings.padEnd(
+              result, result.length() + maxUTF8BytesLength - stringLengthUTF8Bytes(result), ' ');
     }
 
     return result;
@@ -151,8 +153,9 @@ public class CommonUtil {
     if (stringLengthGBKBytes(temp) > maxGBBytesLength) {
       for (int i = temp.length(); i >= 0; i--) {
         result = temp.substring(0, i);
-        if (stringLengthGBKBytes(result) <= maxGBBytesLength)
+        if (stringLengthGBKBytes(result) <= maxGBBytesLength) {
           break;
+        }
       }
     }
 
@@ -187,17 +190,20 @@ public class CommonUtil {
     List<T> result = Lists.newArrayList();
     Collections.addAll(result, array);
     return result;
-
-
   }
 
   /**
-   * 
    * @param input
    * @param length
    * @return
    */
   public static String utf8truncate(String input, int length) {
+
+    /**
+     * https://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html the first from the
+     * high-surrogates range, (U+D800 to U+DBFF), the second from the low-surrogates range (U+DC00
+     * to U+DFFF)
+     */
     StringBuffer result = new StringBuffer(length);
     int resultlen = 0;
     for (int i = 0; i < input.length(); i++) {
@@ -222,6 +228,90 @@ public class CommonUtil {
       result.append(c);
       resultlen += charlen;
     }
-    return result.toString();
+
+    String temp = result.toString();
+
+    if (stringLengthUTF8Bytes(temp) < length) {
+      temp = Strings.padEnd(temp, temp.length() + length - stringLengthUTF8Bytes(temp), ' ');
+    }
+
+    return temp;
+  }
+
+  public static String utf8truncate2(String input, int length) {
+    StringBuffer result = new StringBuffer(length);
+    int resultlen = 0;
+    for (int i = 0; i < input.length(); i++) {
+      int c = input.codePointAt(i);
+      //String temp = Integer.toHexString(c);
+      int charlen = 0;
+      if (c <= 0x7f) {
+        charlen = 1;
+      } else if (c <= 0x7ff) {
+        charlen = 2;
+      } else if (c <= 0xffff) {
+        charlen = 3;
+      } else if (c < 0x1fffff) {
+        charlen = 4;
+      }
+      if (resultlen + charlen > length) {
+        break;
+      }
+
+      if (Character.isBmpCodePoint(c)) {
+        result.append((char) c);
+      } else {
+        result.append(Character.highSurrogate(c));
+        result.append(Character.lowSurrogate(c));
+        i++;
+      }
+      // result.append(Character.toChars(c));
+      resultlen += charlen;
+    }
+
+    String temp = result.toString();
+
+    if (stringLengthUTF8Bytes(temp) < length) {
+      temp = Strings.padEnd(temp, temp.length() + length - stringLengthUTF8Bytes(temp), ' ');
+    }
+
+    return temp;
+  }
+
+  public static String utf8truncate3(String input, int length) {
+    StringBuffer result = new StringBuffer(length);
+    int resultlen = 0;
+    int charlen = 0;
+    for (int cp : input.codePoints().toArray()) {
+      if (cp <= 0x7f) {
+        charlen = 1;
+      } else if (cp <= 0x7ff) {
+        charlen = 2;
+      } else if (cp <= 0xffff) {
+        charlen = 3;
+      } else if (cp < 0x1fffff) {
+        charlen = 4;
+      }
+      if (resultlen + charlen > length) {
+        break;
+      }
+
+      if (Character.isBmpCodePoint(cp)) {
+        result.append((char) cp);
+      } else {
+        result.append(Character.highSurrogate(cp));
+        result.append(Character.lowSurrogate(cp));
+      }
+
+      resultlen += charlen;
+    }
+
+    String temp = result.toString();
+
+    if (stringLengthUTF8Bytes(temp) < length) {
+      temp = Strings.padEnd(temp, temp.length() + length - stringLengthUTF8Bytes(temp), ' ');
+    }
+
+    return temp;
   }
 }

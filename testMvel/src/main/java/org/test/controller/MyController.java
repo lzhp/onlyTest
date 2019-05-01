@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Date: 2018-08-21 00:47:07.
  *
- * @author: lizhipeng.
+ * @author: liZhipeng.
  * @description:
  */
 @RestController

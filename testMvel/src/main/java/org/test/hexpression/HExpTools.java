@@ -15,10 +15,10 @@ import lombok.extern.slf4j.Slf4j;
  * Date: 2018-08-20 08:56:54.
  *
  * @author: lizhipeng.
- * @description:
+ * @description: 全局函数
  */
 @Slf4j
-public class HExp {
+public class HExpTools {
 
   private static final DateTimeFormatter FORMAT_PATTERN_DATE =
       DateTimeFormatter.ofPattern("uuuu-MM-dd");

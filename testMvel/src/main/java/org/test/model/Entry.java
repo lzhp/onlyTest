@@ -41,6 +41,7 @@ public class Entry implements Serializable {
   private List<EntryWorkflow> entryWorkflow;
   private List<IqAppend> iqAppend;
   private List<VinList> vinList;
+  private int goodsIndex; //当前的商品项，用于模拟当前指向的表体记录
 
   /**
    * 

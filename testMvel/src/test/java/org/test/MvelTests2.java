@@ -35,7 +35,7 @@ public class MvelTests2 {
         "entryHead.declPort == '0100' && HExp.dateNow() > '2018-08-20' && HExp.sumList(entryList, 'customsValue') > 100";
 
     ParserContext context = new ParserContext();
-    context.addImport("HExp", org.test.hexpression.HExp.class);
+    context.addImport("HExp", org.test.hexpression.HExpTools.class);
     context.addInput("obj", org.test.model.Entry.class);
     Serializable compiled1 = MVEL.compileExpression(expr, context);
 
@@ -56,7 +56,7 @@ public class MvelTests2 {
     // String expr = "tools.dateNow()";
 
     ParserContext context = new ParserContext();
-    context.addImport("HExp", org.test.hexpression.HExp.class);
+    context.addImport("HExp", org.test.hexpression.HExpTools.class);
     context.addInput("obj", org.test.model.Entry.class);
     Serializable compiled1 = MVEL.compileExpression(expr, context);
 
@@ -72,7 +72,7 @@ public class MvelTests2 {
     String expr = "HExp.dateNow() + ' ' + HExp.timeNow() + ' ' + HExp.dateTimeNow()";
 
     ParserContext context = new ParserContext();
-    context.addImport("HExp", org.test.hexpression.HExp.class);
+    context.addImport("HExp", org.test.hexpression.HExpTools.class);
     context.addInput("obj", org.test.model.Entry.class);
     Serializable compiled1 = MVEL.compileExpression(expr, context);
 
