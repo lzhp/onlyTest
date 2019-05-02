@@ -52,7 +52,7 @@ public class MvelTests2 {
   public void test5() {
 
     Entry entry = initEntry();
-    String expr = "HExp.sumList(entryList, 'aaaa') == 140.1 && 2> 1";
+    String expr = "HExp.sumList(entryList, 'customsValue') == 140.1 && 2> 1";
     // String expr = "tools.dateNow()";
 
     ParserContext context = new ParserContext();

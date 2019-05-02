@@ -2,6 +2,8 @@ package org.test;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Test;
 import org.test.hexpression.HExpEntry;
 import org.test.model.Entry;
@@ -18,7 +20,7 @@ public class HExpEntryTests {
     String rule = "entry.goodsIndex ==0";
 
     Entry entry = initEntry();
-    log.info("test resutl={}", HExpEntry.check(rule, entry));
+    log.info("test resutl={}", (new HExpEntry()).check(rule, entry));
   }
 
   @Test
@@ -26,7 +28,7 @@ public class HExpEntryTests {
     String rule = "entry.entryHead.exPort ==\"0101\"";
 
     Entry entry = initEntry();
-    log.info("test2 resutl={}", HExpEntry.check(rule, entry));
+    log.info("test2 resutl={}", (new HExpEntry()).check(rule, entry));
   }
 
   @Test
@@ -35,7 +37,7 @@ public class HExpEntryTests {
 
     Entry entry = initEntry();
     log.info(
-        "test3: \n entry: {}, \n rule: {}, \n resutl= {}", entry, rule, HExpEntry.check(rule, entry));
+        "test3: \n entry: {}, \n rule: {}, \n resutl= {}", entry, rule, (new HExpEntry()).check(rule, entry));
   }
 
   @Test
@@ -44,8 +46,26 @@ public class HExpEntryTests {
 
     Entry entry = initEntry();
     log.info(
-        "test4: \n entry: {}, \n rule: {}, \n resutl= {}", entry, rule, HExpEntry.check(rule, entry));
+        "test4: \n entry: {}, \n rule: {}, \n resutl= {}", entry, rule, (new HExpEntry()).check(rule, entry));
   }
+  
+  
+  @Test
+  public void test5() {
+    
+    String rule = "HEAD(\"I_E_PORT\") ==\"0101\" && LIST(\"G_NO\") == \"0902\"";
+    
+    Entry entry = initEntry();
+    
+    Object result = null;
+    StopWatch watch = StopWatch.createStarted();
+    for (int i = 0; i < 10; i++) {
+      result = (new HExpEntry()).check(rule, entry);
+    }
+
+    log.info("test5:{},time:{}", result, watch.getTime(TimeUnit.MILLISECONDS));
+  }
+  
   private Entry initEntry() {
     EntryHead head =
         EntryHead.builder()
@@ -81,5 +101,56 @@ public class HExpEntryTests {
 
     Entry entry = Entry.builder().entryHead(head).entryList(lists).build();
     return entry;
+  }
+  
+  
+  
+  @Test
+  public void testCheck() {
+    String rule = "HEAD(\"I_E_PORT\") ==\"0100\" && LIST(\"G_NO\") == \"03\"";
+    
+    Object result = null;
+    Entry entry = initEntry();
+    result =(new HExpEntry()).check(rule, entry,0);
+    
+    
+    StopWatch watch = StopWatch.createStarted();
+    for (int i = 0; i < 10; i++) {
+      result =(new HExpEntry()).check(rule, entry,0);
+    }
+
+    log.info("test5:{},time:{}", result, watch.getTime(TimeUnit.MILLISECONDS));
+  }
+  
+  @Test
+  public void testCheck2() {
+    String rule = "HEAD(\"I_E_PORT\") ==\"0101\" && LIST(\"G_NO\") == \"0902\"";
+    
+    Object result = null;
+    Entry entry = initEntry();
+    result =(new HExpEntry()).check2(rule, entry,0);
+    
+    
+    StopWatch watch = StopWatch.createStarted();
+    for (int i = 0; i < 10000; i++) {
+      result =(new HExpEntry()).check2(rule, entry,0);
+    }
+
+    log.info("test5:{},time:{}", result, watch.getTime(TimeUnit.MILLISECONDS));
+  }
+  
+  @Test
+  public void testCheck3() {
+    String rule = "HEAD(\"I_E_PORT\") ==\"0101\" && LIST(\"G_NO\") == \"0902\"";
+    
+    Entry entry = initEntry();
+    
+    Object result = null;
+    StopWatch watch = StopWatch.createStarted();
+    for (int i = 0; i < 10000; i++) {
+      result =(new HExpEntry()).check3(rule, entry,0);
+    }
+
+    log.info("test5:{},time:{}", result, watch.getTime(TimeUnit.MILLISECONDS));
   }
 }

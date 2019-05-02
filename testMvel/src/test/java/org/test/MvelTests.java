@@ -51,7 +51,7 @@ public class MvelTests {
   public void test2() {
 
     Entry entry = initEntry();
-    String expr = "listSumTradeTotal==140.1 && entryHead.masterCustoms == '0100'";
+    String expr = "listSumTradeTotal==140.1 && entryHead.declPort == '0100'";
     Object result = MVEL.eval(expr, entry);
     log.info(result.toString());
   }
@@ -62,7 +62,7 @@ public class MvelTests {
     int LOOP_TIMES = 1000*100;
 
     Entry entry = initEntry();
-    String expr = "listSumTradeTotal==140.1 && entryHead.masterCustoms == '0100'";
+    String expr = "listSumTradeTotal==140.1 && entryHead.declPort == '0100'";
     Serializable compiled = MVEL.compileExpression(expr);
 
     Object result = MVEL.executeExpression(compiled, entry);
