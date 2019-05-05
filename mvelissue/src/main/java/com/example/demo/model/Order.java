@@ -14,6 +14,4 @@ public class Order {
   private OrderHead orderHead;
   private List<OrderList> orderList;
   private int goodsIndex; //current goods index
-  
-  
 }

@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.mvel2.DataConversion;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
 import org.mvel2.integration.VariableResolverFactory;
@@ -16,7 +18,6 @@ import org.springframework.core.io.Resource;
 import com.example.demo.model.Order;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Maps;
 
 public class ExpOrder {
   private static final ParserContext parserContext;
@@ -33,54 +34,74 @@ public class ExpOrder {
     parserContext.addImport("MVEL", MVEL.class);
 
     parserContext.addImport(
-        "weekDay", MVEL.getStaticMethod(ExpUtil.class, "weekDay", new Class[0]));
+        "weekDay", MVEL.getStaticMethod(ExpUtils.class, "weekDay", new Class[0]));
+    parserContext.addImport(
+        "dateNow", MVEL.getStaticMethod(ExpUtils.class, "dateNow", new Class[0]));
+    parserContext.addImport(
+        "timeNow", MVEL.getStaticMethod(ExpUtils.class, "timeNow", new Class[0]));
+    parserContext.addImport(
+        "dateTimeNow", MVEL.getStaticMethod(ExpUtils.class, "dateTimeNow", new Class[0]));
+    parserContext.addImport("year", MVEL.getStaticMethod(ExpUtils.class, "year", new Class[0]));
+    parserContext.addImport("month", MVEL.getStaticMethod(ExpUtils.class, "month", new Class[0]));
+    parserContext.addImport(
+        "dayOfMonth", MVEL.getStaticMethod(ExpUtils.class, "dayOfMonth", new Class[0]));
+    parserContext.addImport(
+        "rand", MVEL.getStaticMethod(ExpUtils.class, "rand", new Class[] {int.class}));
+    parserContext.addImport(
+        "random", MVEL.getStaticMethod(ExpUtils.class, "random", new Class[] {}));
     parserContext.addImport(
         "mid",
         MVEL.getStaticMethod(
-            ExpUtil.class, "mid", new Class[] {String.class, int.class, int.class}));
+            ExpUtils.class, "mid", new Class[] {String.class, int.class, int.class}));
+    parserContext.addImport(
+        "bt",
+        MVEL.getStaticMethod(ExpUtils.class, "bt", new Class[] {Object.class, Object[].class}));
+
+    parserContext.addImport(
+        "left",
+        MVEL.getStaticMethod(ExpUtils.class, "left", new Class[] {String.class, int.class}));
+    parserContext.addImport(
+        "right",
+        MVEL.getStaticMethod(ExpUtils.class, "right", new Class[] {String.class, int.class}));
+    parserContext.addImport(
+        "in",
+        MVEL.getStaticMethod(ExpUtils.class, "in", new Class[] {Object.class, Object[].class}));
+    parserContext.addImport(
+        "nullsToZero",
+        MVEL.getStaticMethod(ExpUtils.class, "nullsToZero", new Class[] {Object.class}));
 
     parserContext.addInput("order", Order.class);
     parserContext.addInput("goodsIndex", int.class);
   }
 
   public boolean evalToBoolean(String rule, Order order, int goodsIndex) {
-    final String cachePrefix = "check_rule:";
-
-    VariableResolverFactory myVarFactory = new MapVariableResolverFactory();
-    myVarFactory.setNextFactory(functionFactory);
-
-    Serializable s = expressionCache.getIfPresent(cachePrefix + rule);
-    if (s == null) {
-      s = MVEL.compileExpression(rule, parserContext);
-      expressionCache.put(cachePrefix + rule, s);
-    }
-
-    Map<String, Object> vars = Maps.newHashMap();
-    vars.put("order", order);
-    vars.put("goodsIndex", goodsIndex);
-    OptimizerFactory.setDefaultOptimizer(OptimizerFactory.SAFE_REFLECTIVE);
-    boolean result = MVEL.executeExpression(s, vars, myVarFactory, boolean.class);
-    OptimizerFactory.setDefaultOptimizer(OptimizerFactory.DYNAMIC);
-    return result;
+    Object result = eval(rule, order, goodsIndex);
+    return DataConversion.convert(result, boolean.class);
   }
 
   public String evalToString(String rule, Order order, int goodsIndex) {
-    final String cachePrefix = "check_rule:";
+    Object result = eval(rule, order, goodsIndex);
+    return DataConversion.convert(result, String.class);
+  }
+
+  public Object eval(String rule, Order order, int goodsIndex) {
+    final String cachePrefix = "rule:";
+    String cacheKey = cachePrefix + rule;
 
     VariableResolverFactory myVarFactory = new MapVariableResolverFactory();
     myVarFactory.setNextFactory(functionFactory);
 
-    Serializable s = expressionCache.getIfPresent(cachePrefix + rule);
+    Serializable s = expressionCache.getIfPresent(cacheKey);
     if (s == null) {
       s = MVEL.compileExpression(rule, parserContext);
-      expressionCache.put(cachePrefix + rule, s);
+      expressionCache.put(cacheKey, s);
     }
 
-    Map<String, Object> vars = Maps.newHashMap();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("order", order);
     vars.put("goodsIndex", goodsIndex);
     OptimizerFactory.setDefaultOptimizer(OptimizerFactory.SAFE_REFLECTIVE);
-    String result = MVEL.executeExpression(s, vars, myVarFactory, String.class);
+    Object result = MVEL.executeExpression(s, vars, myVarFactory);
     OptimizerFactory.setDefaultOptimizer(OptimizerFactory.DYNAMIC);
     return result;
   }
@@ -104,7 +125,7 @@ public class ExpOrder {
       }
       return data.toString();
     } catch (IOException e) {
-      throw new RuntimeException("读取文件出错：" + fileName);
+      throw new ExpException("读取文件出错：" + fileName);
     }
   }
 }

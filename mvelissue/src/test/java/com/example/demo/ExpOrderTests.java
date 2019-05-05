@@ -55,6 +55,37 @@ public class ExpOrderTests {
   }
 
   @Test
+  public void testExpUtilbt() {
+    String rule = "";
+    Order order = initOrder();
+    boolean result = false;
+
+    rule = "bt(3, 2, 4, 5)";
+    result = (new ExpOrder()).evalToBoolean(rule, order, 0);
+    Assert.assertTrue(result);
+
+    rule = "bt(6, 2, 4, 5)";
+    result = (new ExpOrder()).evalToBoolean(rule, order, 0);
+    Assert.assertTrue(result);
+
+    rule = "bt(1, 2, 4, 5)";
+    result = (new ExpOrder()).evalToBoolean(rule, order, 0);
+    Assert.assertTrue(result == false);
+
+    rule = "bt(6, 2, 4, 7)";
+    result = (new ExpOrder()).evalToBoolean(rule, order, 0);
+    Assert.assertTrue(result == false);
+
+    rule = "bt(\"b\", \"a\", \"c\")";
+    result = (new ExpOrder()).evalToBoolean(rule, order, 0);
+    Assert.assertTrue(result == true);
+
+    rule = "bt(\"e\", \"a\", \"c\")";
+    result = (new ExpOrder()).evalToBoolean(rule, order, 0);
+    Assert.assertTrue(result == false);
+  }
+
+  @Test
   public void testFunc() {
 
     String rule = "";
@@ -68,6 +99,42 @@ public class ExpOrderTests {
     rule = "HEAD(\"POST_CODE\") ==\"0101\" && LIST(\"G_NO\") == \"02\"";
     result = (new ExpOrder()).evalToBoolean(rule, order, 1);
     Assert.assertTrue(result == true);
+  }
+
+  @Test
+  public void testRand() {
+    String rule = "";
+    Order order = initOrder();
+    boolean result = false;
+
+    rule = "rand(20)<20";
+    result = (new ExpOrder()).evalToBoolean(rule, order, 0);
+    Assert.assertTrue(result == true);
+
+    rule = "rand(20)";
+    for (int i = 0; i < 20; i++) {
+      Object obj = (new ExpOrder()).eval(rule, order, 0);
+      log.info("i={}, rand={}", i, obj);
+      Assert.assertTrue((int) obj >= 0 && (int) obj < 20);
+    }
+  }
+  
+  @Test
+  public void testRandom() {
+    String rule = "";
+    Order order = initOrder();
+    boolean result = false;
+
+    rule = "random()<1";
+    result = (new ExpOrder()).evalToBoolean(rule, order, 0);
+    Assert.assertTrue(result == true);
+
+    rule = "random()";
+    for (int i = 0; i < 20; i++) {
+      Object obj = (new ExpOrder()).eval(rule, order, 0);
+      log.info("i={}, random={}", i, obj);
+      Assert.assertTrue((double) obj >= 0 && (double) obj < 1);
+    }
   }
 
   @Test
