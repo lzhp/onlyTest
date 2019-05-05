@@ -4,19 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
-import org.mvel2.ast.ASTNode;
-import org.mvel2.ast.Function;
-import org.mvel2.compiler.CompiledExpression;
 import org.mvel2.integration.VariableResolverFactory;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
-import org.mvel2.util.ASTIterator;
-import org.mvel2.util.ASTLinkedList;
+import org.mvel2.optimizers.OptimizerFactory;
 import org.mvel2.util.SimpleVariableSpaceModel;
 import org.mvel2.util.VariableSpaceCompiler;
 import org.springframework.core.io.ClassPathResource;
@@ -114,7 +108,10 @@ public class HExpEntry {
     entry.setGoodsIndex(goodsIndex);
     Map<String, Object> vars = Maps.newHashMap();
     vars.put("entry", entry);
-    return MVEL.executeExpression(s, vars, myVarFactory, boolean.class);
+    OptimizerFactory.setDefaultOptimizer(OptimizerFactory.SAFE_REFLECTIVE);
+    boolean result = MVEL.executeExpression(s, vars, myVarFactory, boolean.class);
+    OptimizerFactory.setDefaultOptimizer(OptimizerFactory.DYNAMIC);
+    return result;
   }
 
   /**
@@ -138,19 +135,5 @@ public class HExpEntry {
     } catch (IOException e) {
       throw new HExpException("读取文件出错：" + fileName);
     }
-  }
-
-  private Map<String, Function> extractAllDeclaredFunctions(CompiledExpression compile) {
-    Map<String, Function> allFunctions = new LinkedHashMap<String, Function>();
-    ASTIterator instructions = new ASTLinkedList(compile.getFirstNode());
-
-    ASTNode n;
-    while (instructions.hasMoreNodes()) {
-      if ((n = instructions.nextNode()) instanceof Function) {
-        allFunctions.put(n.getName(), (Function) n);
-      }
-    }
-
-    return allFunctions;
   }
 }

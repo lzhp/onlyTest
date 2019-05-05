@@ -1,8 +1,10 @@
 def HEAD(field) { 
     if (field=="POST_CODE") {return order.?orderHead.?postCode;}
     else if (field=="CUSTOMER_NAME") {return order.?orderHead.?customerName;}
+    
 };
 
 def LIST(field) { 
-    if (field=="G_NO") {return order.?orderList[order.goodsIndex].?gNo;}
+    if (field=="G_NO") {return order.?orderList[goodsIndex].?gNo;}
+    else if (field=="CODE_TS") {return order.?orderList[goodsIndex].?codeTs;}
 };

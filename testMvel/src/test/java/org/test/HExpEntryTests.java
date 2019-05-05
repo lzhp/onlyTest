@@ -74,7 +74,7 @@ public class HExpEntryTests {
             .declPort("0200")
             .dDate(LocalDateTime.now())
             .netWt(25.0)
-            .iqIEPort("0101")
+            .iEPort("0101")
             .build();
     List<EntryList> lists = Lists.newArrayList();
     lists.add(
@@ -115,7 +115,7 @@ public class HExpEntryTests {
     
     
     StopWatch watch = StopWatch.createStarted();
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10000; i++) {
       result =(new HExpEntry()).check(rule, entry,0);
     }
 

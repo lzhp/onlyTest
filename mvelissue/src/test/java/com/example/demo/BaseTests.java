@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mvel2.MVEL;
 import org.mvel2.integration.VariableResolverFactory;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
+import org.mvel2.optimizers.OptimizerFactory;
 import com.example.demo.model.Order;
 import com.example.demo.model.OrderHead;
 import com.example.demo.model.OrderList;
@@ -22,38 +23,40 @@ public class BaseTests {
 
   @Test
   public void testBase() {
-    String func = "def HEAD(field) { \r\n" + 
-        "    if (field==\"POST_CODE\") {return order.?orderHead.?postCode;}\r\n" + 
-        "    else if (field==\"CUSTOMER_NAME\") {return order.?orderHead.?customerName;}\r\n" + 
-        "};\r\n" + 
-        "\r\n" + 
-        "def LIST(field) { \r\n" + 
-        "    if (field==\"G_NO\") {return order.?orderList[order.goodsIndex].?gNo;}\r\n" + 
-        "};";
-    
+    String func =
+        "def HEAD(field) { \r\n"
+            + "    if (field==\"POST_CODE\") {return order.?orderHead.?postCode;}\r\n"
+            + "    else if (field==\"CUSTOMER_NAME\") {return order.?orderHead.?customerName;}\r\n"
+            + "};\r\n"
+            + "\r\n"
+            + "def LIST(field) { \r\n"
+            + "    if (field==\"G_NO\") {return order.?orderList[order.goodsIndex].?gNo;}\r\n"
+            + "};";
+
     VariableResolverFactory functionFactory = new MapVariableResolverFactory();
     MVEL.eval(func, functionFactory);
-    
-    String rule = "HEAD(\"POST_CODE\") ==\"0101\" && LIST(\"G_NO\") == \"01\"";
 
+    String rule = "HEAD(\"POST_CODE\") ==\"0101\" && LIST(\"G_NO\") == \"01\"";
+    //String rule = "HEAD(\"POST_CODE\") ==\"0101\" && LIST(\"G_NO\") == \"01\"";
 
     Serializable s = MVEL.compileExpression(rule);
     Stopwatch watch = Stopwatch.createStarted();
 
-    Order order = initOrder();    
+    Order order = initOrder();
     order.setGoodsIndex(0);
     Map<String, Object> vars = Maps.newHashMap();
     vars.put("order", order);
 
     boolean result = false;
-
-    for (int i = 0; i < 100; i++) {
+    OptimizerFactory.setDefaultOptimizer(OptimizerFactory.SAFE_REFLECTIVE);
+    for (int i = 0; i < 10000; i++) {
       VariableResolverFactory myVarFactory = new MapVariableResolverFactory();
       myVarFactory.setNextFactory(functionFactory);
       result = MVEL.executeExpression(s, vars, myVarFactory, boolean.class);
-      log.info("{}", i);
+      // log.info("{}", i);
       assertTrue(result);
     }
+    OptimizerFactory.setDefaultOptimizer(OptimizerFactory.DYNAMIC);
 
     log.info("testBase:{},time:{}", result, watch.elapsed(TimeUnit.MILLISECONDS));
   }

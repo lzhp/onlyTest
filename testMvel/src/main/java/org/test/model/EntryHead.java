@@ -42,9 +42,9 @@ public class EntryHead implements Serializable {
   private String iqDeclPort;
   private String imPort;
   private String exPort;
-  @Setter(onMethod_ = { @JsonSetter("IqIEPort") })
-  @Getter(onMethod_ = { @JsonGetter("IqIEPort") }) 
-  private String iqIEPort;
+  @Setter(onMethod_ = { @JsonSetter("IEPort") })
+  @Getter(onMethod_ = { @JsonGetter("IEPort") }) 
+  private String iEPort;
   private LocalDateTime imDate;
   private LocalDateTime exDate;
   private LocalDateTime dDate;

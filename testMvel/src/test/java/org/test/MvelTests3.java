@@ -83,7 +83,7 @@ public class MvelTests3 {
             .declPort("0200")
             .dDate(LocalDateTime.now())
             .netWt(25.0)
-            .iqIEPort("0101")
+            .iEPort("0101")
             .build();
     List<EntryList> lists = Lists.newArrayList();
     lists.add(

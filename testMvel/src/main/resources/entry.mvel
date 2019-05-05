@@ -1,5 +1,5 @@
 def HEAD(field) { 
-    if (field=="I_E_PORT") {return entry.?entryHead.?exPort;}
+    if (field=="I_E_PORT") {return entry.?entryHead.?iEPort;}
     else if (field=="DECL_PORT") {return entry.?entryHead.?declPort;}
 };
 
