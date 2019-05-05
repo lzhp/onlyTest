@@ -318,6 +318,6 @@ public class ExpUtils {
    * @return
    */
   public static double random() {
-    return rand.nextInt(100000)/100000.0;
+    return rand.nextDouble();
   }
 }

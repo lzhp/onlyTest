@@ -22,12 +22,20 @@ public class ConditionItem {
   @Getter
   public enum Operator {
 
-    /**
-     * CUSTOM property里保存的是自定义语句
-     */
-    EQ(" = "), LE(" <= "), GE(" >= "), GT(" > "), LT(" < "), NOTEQ(" != "), LIKE(" LIKE "), BT(
-        " BETWEEN "), ISNULL(
-            " IS NULL "), NOTNULL(" IS NOT NULL "), IN(" IN "), NOTIN(" NOT IN "), CUSTOM("CUSTOM");
+    /** CUSTOM property里保存的是自定义语句 */
+    EQ(" = "),
+    LE(" <= "),
+    GE(" >= "),
+    GT(" > "),
+    LT(" < "),
+    NOTEQ(" != "),
+    LIKE(" LIKE "),
+    BT(" BETWEEN "),
+    ISNULL(" IS NULL "),
+    NOTNULL(" IS NOT NULL "),
+    IN(" IN "),
+    NOTIN(" NOT IN "),
+    CUSTOM("CUSTOM");
 
     private String oper;
 
@@ -38,12 +46,13 @@ public class ConditionItem {
 
   /**
    * 需要判断的字段，如 aaa = 'value'等，
-   * 
-   * 单个参数放到values[0]中，
-   * 
-   * in bt等函数用的参数较多，参数放到values中
+   *
+   * <p>单个参数放到values[0]中，
+   *
+   * <p>in bt等函数用的参数较多，参数放到values中
    */
   private String property;
+
   private Operator operator;
   private Object[] values;
 
@@ -64,8 +73,6 @@ public class ConditionItem {
     }
   }
 
-
-
   public String toSqlString() {
 
     Validate.isTrue(this.isValid(), "变量未初始化:{%s}", this);
@@ -78,37 +85,49 @@ public class ConditionItem {
       case GT:
       case LT:
       case NOTEQ:
-      case LIKE: {
-        result = property + operator.getOper() + "?";
-        break;
-      }
+      case LIKE:
+        {
+          result = property + operator.getOper() + "?";
+          break;
+        }
       case ISNULL:
-      case NOTNULL: {
-        result = property + operator.getOper();
-        break;
-      }
+      case NOTNULL:
+        {
+          result = property + operator.getOper();
+          break;
+        }
       case IN:
-      case NOTIN: {
-        Validate.isTrue(ArrayUtils.isNotEmpty(this.values), "values 未初始化！");
-        String[] t = new String[this.values.length];
-        Arrays.fill(t, "?");
-        result = property + operator.getOper() + "(" + StringUtils.join(t, ',') + ")";
-        break;
-      }
+      case NOTIN:
+        {
+          Validate.isTrue(ArrayUtils.isNotEmpty(this.values), "values 未初始化！");
+          String[] t = new String[this.values.length];
+          Arrays.fill(t, "?");
+          result = property + operator.getOper() + "(" + StringUtils.join(t, ',') + ")";
+          break;
+        }
 
-      case BT: {
-        Validate.isTrue(ArrayUtils.isNotEmpty(this.values), "values 未初始化！values={%s}",
-            ArrayUtils.toString(this.values, "null"));
-        Validate.isTrue(this.values.length >= 2, "values 至少有两个元素！values={%s}",
-            ArrayUtils.toString(this.values));
-        result = property + operator.getOper() + " ? and ? ";
-      }
-      case CUSTOM: {
-        result = property;
-      }
-      default: {
-        log.warn("unexpect operator:{}", operator);
-      }
+      case BT:
+        {
+          Validate.isTrue(
+              ArrayUtils.isNotEmpty(this.values),
+              "values 未初始化！values={%s}",
+              ArrayUtils.toString(this.values, "null"));
+          Validate.isTrue(
+              this.values.length >= 2,
+              "values 至少有两个元素！values={%s}",
+              ArrayUtils.toString(this.values));
+          result = property + operator.getOper() + " ? and ? ";
+          break;
+        }
+      case CUSTOM:
+        {
+          result = property;
+          break;
+        }
+      default:
+        {
+          log.warn("unexpect operator:{}", operator);
+        }
     }
     return result;
   }
@@ -124,42 +143,43 @@ public class ConditionItem {
       case GT:
       case LT:
       case NOTEQ:
-      case LIKE: {
-        result = ArrayUtils.subarray(values, 0, 1);
-        break;
-      }
+      case LIKE:
+        {
+          result = ArrayUtils.subarray(values, 0, 1);
+          break;
+        }
       case ISNULL:
-      case NOTNULL: {
-        result = null;
-        break;
-      }
+      case NOTNULL:
+        {
+          result = null;
+          break;
+        }
       case IN:
       case NOTIN:
-      case CUSTOM: {
-        result = values;
-        break;
-      }
-      case BT: {
-        result = ArrayUtils.subarray(values, 0, 2);
-      }
-      default: {
-        log.warn("unexpect operator:{}", operator);
-      }
+      case CUSTOM:
+        {
+          result = values;
+          break;
+        }
+      case BT:
+        {
+          result = ArrayUtils.subarray(values, 0, 2);
+          break;
+        }
+      default:
+        {
+          log.warn("unexpect operator:{}", operator);
+        }
     }
     return result;
   }
 
   private boolean isValid() {
-    if (StringUtils.isEmpty(property)) {
+    if (StringUtils.isEmpty(property) || this.operator == null) {
       return false;
     }
-    if (this.operator == null) {
-      return false;
-    }
-
     return true;
   }
-
 
   public static ConditionItem eq(String name, Object value) {
     return new ConditionItem(name, Operator.EQ, value);
@@ -177,11 +197,11 @@ public class ConditionItem {
     return new ConditionItem(name, Operator.LIKE, value);
   }
 
-  public static ConditionItem isNull(String name, Integer dataType) {
+  public static ConditionItem isNull(String name) {
     return new ConditionItem(name, Operator.ISNULL, "");
   }
 
-  public static ConditionItem notNull(String name, Integer dataType) {
+  public static ConditionItem notNull(String name) {
     return new ConditionItem(name, Operator.NOTNULL, "");
   }
 
