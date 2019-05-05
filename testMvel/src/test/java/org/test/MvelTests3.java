@@ -17,7 +17,6 @@ import org.mvel2.integration.VariableResolverFactory;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.test.hexpression.HExpEntry;
 import org.test.model.Entry;
 import org.test.model.EntryHead;
 import org.test.model.EntryList;
@@ -36,7 +35,8 @@ public class MvelTests3 {
 
     // Now the context will have a list of all the inputs.  Unfortunately it does not tell you what
     // type of Object the input is.
-    for (Map.Entry<String, Class> entry : context.getInputs().entrySet()) {
+    for (@SuppressWarnings("rawtypes")
+    Map.Entry<String, Class> entry : context.getInputs().entrySet()) {
       System.out.println(
           "Variable name : " + entry.getKey() + ", Data Type = " + entry.getValue().toString());
     }
@@ -153,17 +153,11 @@ public class MvelTests3 {
 
     Entry entry = initEntry();
     log.info("Result of Test4 ={}", MVEL.executeExpression(s, entry, myVarFactory));
-    
-    
-    
-    
-
   }
 
   @Test
   public void test7() {
-    
-    
+
     String func =
         "def HEAD(field) { \r\n"
             + "    if (field==\"I_E_PORT\") {return entry.entryHead.iqIEPort;}\r\n"
@@ -173,18 +167,18 @@ public class MvelTests3 {
             + "    if (field==\"G_NO\") {return entry.entryList[0].gNo;}\r\n"
             + "};";
 
-//    VariableResolverFactory functionFactory = new MapVariableResolverFactory();
-//    MVEL.eval(func, functionFactory);
-    
-    String rule="HEAD(\"I_E_PORT\") + LIST(\"G_NO\")";
+    //    VariableResolverFactory functionFactory = new MapVariableResolverFactory();
+    //    MVEL.eval(func, functionFactory);
+
+    String rule = "HEAD(\"I_E_PORT\") + LIST(\"G_NO\")";
     Entry entry = initEntry();
-    
+
     Map<String, Object> vars = Maps.newHashMap();
     vars.put("MVEL", MVEL.class);
     vars.put("entry", Entry.class);
 
     Serializable s = MVEL.compileExpression(rule, vars);
-    
+
     Object result = null;
     StopWatch watch = StopWatch.createStarted();
     for (int i = 0; i < 100; i++) {
@@ -195,34 +189,32 @@ public class MvelTests3 {
       result = MVEL.executeExpression(s, entry, myVarFactory);
     }
 
-    log.info("test7:{},time:{}", result, watch.getTime(TimeUnit.MILLISECONDS)); 
+    log.info("test7:{},time:{}", result, watch.getTime(TimeUnit.MILLISECONDS));
   }
-  
+
   @Test
   public void test8() {
-    
-    String func =readFromFile();  
+
+    String func = readFromFile();
     log.info(func);
-    String rule="HEAD(\"I_E_PORT\") + LIST(\"G_NO\")";
+    String rule = "HEAD(\"I_E_PORT\") + LIST(\"G_NO\")";
     Entry entry = initEntry();
-    
+
     Map<String, Object> vars = Maps.newHashMap();
     vars.put("MVEL", MVEL.class);
     vars.put("entry", Entry.class);
 
     Serializable s = MVEL.compileExpression(func + rule, vars);
-    
+
     Object result = null;
     StopWatch watch = StopWatch.createStarted();
     for (int i = 0; i < 10; i++) {
-      result = MVEL.executeExpression(s, entry,vars);
+      result = MVEL.executeExpression(s, entry, vars);
     }
 
-    log.info("test6:{},time:{}", result, watch.getTime(TimeUnit.MILLISECONDS)); 
+    log.info("test6:{},time:{}", result, watch.getTime(TimeUnit.MILLISECONDS));
   }
-  
-  
-  
+
   @Test
   public void testFile() {
     log.info("file:{}", readFromFile());

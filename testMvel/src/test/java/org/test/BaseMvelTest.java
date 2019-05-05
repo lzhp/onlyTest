@@ -21,16 +21,12 @@ import org.test.model.Entry;
 import org.test.model.EntryHead;
 import org.test.model.EntryList;
 import com.google.common.base.Stopwatch;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BaseMvelTest {
-  private static final Cache<String, Serializable> expressionCache =
-      CacheBuilder.newBuilder().maximumSize(10000).expireAfterWrite(2, TimeUnit.HOURS).build();
   private static final ParserContext parserContext = new ParserContext();
 
   static {
