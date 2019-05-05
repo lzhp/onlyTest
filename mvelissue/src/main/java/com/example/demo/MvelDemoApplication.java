@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MvelissueApplication {
+public class MvelDemoApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MvelissueApplication.class, args);
+		SpringApplication.run(MvelDemoApplication.class, args);
 	}
 
 }

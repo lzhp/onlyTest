@@ -31,7 +31,7 @@ public class ExpOrderTests {
     rule = "HEAD(\"POST_CODE\") ==\"0101\" && LIST(\"G_NO\") == \"02\"";
     result = (new ExpOrder()).evalToBoolean(rule, order, 1);
     Assert.assertTrue(result == true);
-    
+
     rule = "mid(HEAD(\"POST_CODE\"),2,1)==\"1\"";
     result = (new ExpOrder()).evalToBoolean(rule, order, 0);
     Assert.assertTrue(result == true);
@@ -47,11 +47,11 @@ public class ExpOrderTests {
     rule = "mid(\"test\", 2, 1)";
     result = (new ExpOrder()).evalToString(rule, order, 0);
     log.info("[{}]", result);
-    Assert.assertTrue(result == "e");
+    Assert.assertTrue(result.equals("e"));
 
     rule = "mid(\"test\", 2, 1)==\"e\"";
     result = (new ExpOrder()).evalToString(rule, order, 0);
-    Assert.assertTrue(result == "true");
+    Assert.assertTrue(result.equals("true"));
   }
 
   @Test
