@@ -64,6 +64,10 @@
 			<artifactId>icu4j</artifactId>
 			<version>63.1</version>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
 
 	</dependencies>
 

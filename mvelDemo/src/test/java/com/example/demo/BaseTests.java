@@ -1,12 +1,15 @@
 package com.example.demo;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.mvel2.MVEL;
+import org.mvel2.ParserContext;
 import org.mvel2.integration.VariableResolverFactory;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.mvel2.optimizers.OptimizerFactory;
@@ -37,7 +40,7 @@ public class BaseTests {
     MVEL.eval(func, functionFactory);
 
     String rule = "HEAD(\"POST_CODE\") ==\"0101\" && LIST(\"G_NO\") == \"01\"";
-    //String rule = "HEAD(\"POST_CODE\") ==\"0101\" && LIST(\"G_NO\") == \"01\"";
+    // String rule = "HEAD(\"POST_CODE\") ==\"0101\" && LIST(\"G_NO\") == \"01\"";
 
     Serializable s = MVEL.compileExpression(rule);
     Stopwatch watch = Stopwatch.createStarted();
@@ -71,5 +74,22 @@ public class BaseTests {
         OrderHead.builder().orderId("111").customerName("bill gates").postCode("0101").build();
 
     return Order.builder().orderHead(head).orderList(list).build();
+  }
+
+  @SuppressWarnings("rawtypes")
+  @Test
+  public void testFunctionDefinitionInStronglyTypedMode() {
+    final ParserContext context = ParserContext.create().stronglyTyped();
+    context.addImport("MVEL", MVEL.class);
+    final Serializable compiled =
+        MVEL.compileExpression("def printt(x) { x; }; identity(\"test\")", context);
+    assertEquals(
+        "Identity function must be present in parser context",
+        org.mvel2.ast.Function.class,
+        context.getVarOrInputType("identity"));
+    assertEquals(
+        "Identity function must be evaluated",
+        "test",
+        MVEL.executeExpression(compiled, new HashMap()));
   }
 }
