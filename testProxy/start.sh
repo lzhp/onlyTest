@@ -1,0 +1,1 @@
+java -Xms128m -Xmx2048m -Dspring.profiles.active=product -DsocksProxyHost=10.99.105.119 -DsocksProxyPort=8080 -jar testProxy-0.0.1-SNAPSHOT.jar 

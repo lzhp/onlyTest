@@ -1,0 +1,5 @@
+#remote.server.url: https://www.google.com
+#remote.server.url: https://106.38.3.242/swagger-ui.html
+remote.server.url: https://106.38.3.242:8088/address/query
+logging:
+  level.cn.gov.customs: DEBUG 

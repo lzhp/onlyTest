@@ -1,0 +1,1 @@
+java -Xms128m -Xmx2048m -Dspring.profiles.active=product -DsocksProxyHost=127.0.0.1 -DsocksProxyPort=10808 -Dhttp.nonProxyHosts="www.google.com|10.99.*" -jar testProxy-0.0.1-SNAPSHOT.jar 
