@@ -16,7 +16,7 @@ public class QueryController {
   @Autowired PtaService ptaService;
 
   @GetMapping("/track/getUserTrack-get")
-  private QueryResult trackGet(
+  public QueryResult trackGet(
       @RequestParam(required = false) String userName,
       @RequestParam String userPhoneCode,
       @RequestParam String queryId) {
@@ -24,7 +24,7 @@ public class QueryController {
   }
 
   @PostMapping("/track/getUserTrack")
-  private QueryResult trackPost(@RequestBody QueryParam params) {
+  public QueryResult trackPost(@RequestBody QueryParam params) {
     return ptaService.queryCaict(
         params.getQueryId(), params.getUserName(), params.getUserPhoneCode());
   }
